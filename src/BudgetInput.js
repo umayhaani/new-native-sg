@@ -7,16 +7,15 @@ import {
 } from 'react-native';
 import Foundation from 'react-native-vector-icons/Foundation'
 import { width, height, totalSize } from 'react-native-dimension';
-const BudgetInput = (props) => {
-    const [min, setMin] = useState('');
-    const [max, setMax] = useState('');
+const BudgetInput = ({budgetMinHandler,budgetMaxHandler,min,max}) => {
+ 
     return (
      <View style={styles.mainContainer}>
         <View style={styles.seacrhView} >
             <Foundation style={styles.seacrhIcon} name="dollar" size={totalSize(3.8)} color="#7E7E7E" />
             <TextInput
                 style={styles.input}
-                onChangeText={search => setMin(search)}
+                onChangeText={search => budgetMinHandler(search)}
                 value={min}
                 placeholderTextColor="#7E7E7E"
                 placeholder="50"
@@ -28,7 +27,7 @@ const BudgetInput = (props) => {
             <Foundation style={styles.seacrhIcon} name="dollar" size={totalSize(3.8)} color="#7E7E7E" />
             <TextInput
                 style={styles.input}
-                onChangeText={search => setMax(search)}
+                onChangeText={search => budgetMaxHandler(search)}
                 value={max}
                 placeholderTextColor="#7E7E7E"
                 placeholder="60"

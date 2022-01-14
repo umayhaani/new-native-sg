@@ -1,28 +1,31 @@
 import React, { useState } from "react";
-import { View, Switch, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import { height, totalSize, width } from "react-native-dimension";
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
  
 
-const RadioBtn = (props) => {
- const [skillListingType,setSkillListingType] = useState("")
- const [skill,setSkill]=useState("")
- const [experience,setExperience] = useState("")
- const [budget,setBudget] = useState("")
- const [candidate,setCandidtate] = useState("")
- const [hide,setHide] = useState(false)
+ const RadioBtn = (props) => {
+   const [skillListingType,setSkillListingType] = useState("")
+  // const [skill,setSkill]=useState(null)
+  // const [experience,setExperience] = useState(null)
+  // const [budget,setBudget] = useState(null)
+  // const [candidate,setCandidtate] = useState(null)
+  // const [hide,setHide] = useState(false)
+
    const onPressHandler = (title)=>{
       if(title=="Contract" || title =="Permanent" || title=="Per Diem"){
         setSkillListingType(title)
-        setSkill(title)
+        //setSkill(title)
+        props.getFiltersResult(title)
       }
-      if(title=="male" || title =="female"){
+      if(title=="Less than 1 year" || title =="1 - 2 years"||title=="3 - 5 years"||title=="6 - 10 years"||title=="more than 10 years"){
         setSkillListingType(title)
-        setExperience(title)
+        //setExperience(title)
+        props.getFiltersResult(title)
       }
       if(title=="Hourly" || title =="Weekly"){
         setSkillListingType(title)
-        setBudget(title)
+        props.getFiltersResult(title)
       }
       if(title=="Hide previously viewed"){
         if(!hide){
@@ -34,18 +37,20 @@ const RadioBtn = (props) => {
       }
       if(props.sortCandidate){
         setSkillListingType(title)
-           setCandidtate(title)
+          // setCandidtate(title)
+           props.getFiltersResult(title)
       }
      
  }
     return (
            <>
-           {props.title !="Hide" && <Text style={props.sortCandidate?{}:styles.headingStyle}>{props.title}</Text> }
+        
+   {props.title !="Hide" && <Text style={props.sortCandidate?{}:styles.headingStyle}>{props.title}</Text> }
            
-<RadioForm
-  animation={true}
-  formHorizontal={props.title=="Budget"?true:false}
->
+    <RadioForm
+      animation={true}
+      formHorizontal={props.title=="Budget"?true:false}
+    >
 
   {/* To create radio buttons, loop through your array of options */}
   {
@@ -82,7 +87,9 @@ const RadioBtn = (props) => {
       )
 })
   }  
+ 
 </RadioForm>
+
            </>
   );
 }

@@ -3,10 +3,12 @@ import { StyleSheet, View, Text,FlatList, TouchableOpacity} from 'react-native';
 import { width,totalSize } from 'react-native-dimension';
 import Feather from 'react-native-vector-icons/Feather';
 import Card from './Card'
+
+
 export default function Pagination(props) {
     const [data, setData] = useState([])
     const [pageCurrent, setpageCurrent] = useState(1)
-
+//console.log(props.data.skilllistings.data, " paginationss.....")
     useEffect (() => {
         getData()
         return () => {
@@ -36,13 +38,26 @@ export default function Pagination(props) {
         console.log("previous page clicked", pageCurrent)
         // Do this so your page can't go negative
         setpageCurrent(pageCurrent - 1<1?1:pageCurrent - 1)
+        props.setCurrentPage(pageCurrent-1)
     }
 
     const handleNextPage = () => {
         console.log("next page clicked", pageCurrent)
         setpageCurrent(pageCurrent + 1)
+        props.setCurrentPage(pageCurrent+1)
+       
+    }
 
-        
+    const firstPageHandler =()=>{
+        setpageCurrent(1)
+        props.setCurrentPage(1)
+    }
+
+    const lastPageHandler = ()=>{
+        console.log(Math.round(props.totalCount))
+        let pageNumber = Math.round(props.totalCount/5) //replace 5 with 20
+        setpageCurrent(pageNumber)
+        props.setCurrentPage(pageNumber) //20/5 totaldata/perpagedata 
     }
 
     const ListHeader = () => {
@@ -51,12 +66,15 @@ export default function Pagination(props) {
             
           <View style={styles.footerStyle}>
               {pageCurrent>1 &&  <TouchableOpacity onPress={handlePreviousPage}>
+              {pageCurrent>2 && <TouchableOpacity onPress={firstPageHandler}><Text>First</Text></TouchableOpacity>}
+             
              <Feather  name='chevron-left' size={totalSize(4)} />
             </TouchableOpacity> }
             <Text style={pageCurrent==1?{...styles.textStyle,marginLeft:width(31)}:styles.textStyle}> Page {pageCurrent}</Text>
          <TouchableOpacity onPress={handleNextPage}>
          <Feather  name='chevron-right' size={totalSize(4)} />
             </TouchableOpacity>
+        <TouchableOpacity onPress={lastPageHandler}><Text>Last</Text></TouchableOpacity>
           </View>
         );
       };
@@ -67,7 +85,10 @@ export default function Pagination(props) {
  
           <FlatList
               data={props.data}
-              renderItem={({item})=><Card Lable={item.Lable} img={item.img} profession={item.profession} experience={item.experience}  />}
+              renderItem={({item})=><Card Lable={item.users[0].name} img={item.users[0].PictureUrl} profession={item.Title} experience={item.users[0].profile.ExperienceLevelName}     />
+             // <Card Lable={item.label} img={item.img} profession={item.profession} experience={item.experience} 
+            
+            }
               ListFooterComponent={ListHeader}
               keyExtractor={(item, index) => index.toString()}
               showsVerticalScrollIndicator={false}

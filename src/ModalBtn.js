@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { View, Pressable, StyleSheet, Text } from "react-native";
 import { height, totalSize, width } from "react-native-dimension";
 import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 
 const ModalBtn = ({toggleVisible}) => {
 
