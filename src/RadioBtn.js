@@ -1,16 +1,20 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { height, totalSize, width } from "react-native-dimension";
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+import { useEffect } from "react/cjs/react.development";
  
 
  const RadioBtn = (props) => {
    const [skillListingType,setSkillListingType] = useState("")
-  // const [skill,setSkill]=useState(null)
-  // const [experience,setExperience] = useState(null)
-  // const [budget,setBudget] = useState(null)
-  // const [candidate,setCandidtate] = useState(null)
-  // const [hide,setHide] = useState(false)
+   console.log(props.clearAll,"tgthtr")
+   useEffect(()=>{
+    if(props.clearAll){
+      setSkillListingType(" ")
+      props.setClearAll(false)
+    }
+   },[props.clearAll])
+   
 
    const onPressHandler = (title)=>{
       if(title=="Contract" || title =="Permanent" || title=="Per Diem"){
