@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
     StyleSheet,
     View,
@@ -7,8 +7,17 @@ import {
 } from 'react-native';
 import Foundation from 'react-native-vector-icons/Foundation'
 import { width, height, totalSize } from 'react-native-dimension';
-const BudgetInput = ({budgetMinHandler,budgetMaxHandler,min,max}) => {
- 
+const BudgetInput = ({budgetMinHandler,budgetMaxHandler,min,max,clearAll,setClearAll,setMin,setMax}) => {
+       
+    useEffect(()=>{
+        if(clearAll){
+        setMin(null)
+        setMax(null)
+        setClearAll(false)
+        }
+       },[clearAll])
+
+
     return (
      <View style={styles.mainContainer}>
         <View style={styles.seacrhView} >

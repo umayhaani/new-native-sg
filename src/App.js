@@ -25,6 +25,7 @@ import { height, width, totalSize } from 'react-native-dimension';
 import Pagination from './Pagination';
 import { useFilter } from './useFilter';
 import { useQuery,gql, useLazyQuery } from '@apollo/client';
+import SortLocation from './SortLocation';
 
                                                                                 
 
@@ -33,6 +34,11 @@ const App=()=>{
   const [page,setPage] = useState(1)
   const [userData,setUserData] = useState();
   const [show,setShow]=useState(false)
+  const [showLocationModal,setShowLocationModal]=useState(false)
+  const [locationPlaceHolder,setLocationPlaceholder] = useState("Search Location")
+  const [locationData,setLocationData] = useState({
+    Location:null
+  })
   const [searchFilter,setSearchFilter]=useState({
     GigType:null,
     BudgetMin:null,
@@ -56,7 +62,14 @@ const App=()=>{
          setShow(true)
          getCardDetail()
  },[show]) 
-  
+
+  const setLocationPlaceholderHandler = useCallback((title)=>{
+            setLocationPlaceholder(title)
+            console.log(title," im placeholder")
+  })
+
+console.log(searchFilter.Location, " searhc filter loavtios")
+
   const GET_CHARACTERS = gql`
   query{
     skilllistings(
@@ -103,9 +116,9 @@ const App=()=>{
     };
   },[])
 
- console.log(userData, " ....,.,.")
- console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
- console.log(data," im data",searchFilter)
+//  console.log(userData, " ....,.,.")
+//  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
+//  console.log(data," im data",searchFilter)
    return (
     <SafeAreaView style={styles.parentView} >
       <Header />
@@ -125,7 +138,23 @@ const App=()=>{
             height:1,
             backgroundColor:'#e4e4e4',
             alignSelf: 'stretch'}} />
-             <ModalWindow page={page} setSearchFilter={setSearchFilter} searchFilter={searchFilter} getCardDetail={getCardDetail} setShowHandler={setShowHandler} />
+             <ModalWindow page={page} setSearchFilter={setSearchFilter} 
+             searchFilter={searchFilter}
+              getCardDetail={getCardDetail}
+               setShowHandler={setShowHandler} 
+               setShowLocationModal={setShowLocationModal} 
+              locationPlaceHolder={locationPlaceHolder}
+              setLocationPlaceholderHandler={setLocationPlaceholderHandler}
+           
+             
+               />
+     {showLocationModal && <SortLocation modalVisible={showLocationModal} 
+       //Location={searchFilter.Location}
+       Location={locationData.Location}
+       setShowLocationModal={setShowLocationModal}
+       setLocationData={setLocationData}
+         setLocationPlaceholderHandler={setLocationPlaceholderHandler}
+      /> }    
            <Toggle text="Nearby Candidates" />
            {loading && <Text>Loading...</Text>}
            {userData  &&  <View style={styles.internalView} >

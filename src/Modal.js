@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Modal, StyleSheet, Text, Pressable, View, ScrollView,Button } from "react-native";
+import { Modal, StyleSheet, Text, Pressable, View, ScrollView,Button, TextInput } from "react-native";
 import { height, totalSize, width } from "react-native-dimension";
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import BudgetInput from "./BudgetInput";
@@ -7,11 +7,7 @@ import FilterBtn from "./FilterBtn";
 import Line from "./Line";
 import ModalBtn from "./ModalBtn";
 import RadioBtn from "./RadioBtn";
-import { useFilter } from "./useFilter";
-import { useQuery,gql, useLazyQuery } from '@apollo/client';
-import { useEffect } from "react/cjs/react.development";
 
-//      data={props.data.skilllistings.data} <Card Lable={item.users[0].name} img={item.users[0].PictureUrl} profession={item.Title} experience={item.users[0].profile.ExperienceLevelName}
 
 const ModalWindow = (props) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -21,15 +17,10 @@ const ModalWindow = (props) => {
   const [budget,setBudget] = useState(null)
   const [sortBy,setSortBy]=useState(null)
 
+  const [clearAll,setClearAll] = useState(false)
   const [min, setMin] = useState(null);
   const [max, setMax] = useState(null);
 
-  const SORT=[{
-    MOST_RECENT:1
-  },{
-    MOST_RELEVANT:2
-  }
-]
  
   const  skillListing_props = [
     {label: 'Contract', value: "Contract", total:321 },
@@ -79,9 +70,8 @@ const budgetMaxHandler=useCallback((search)=>{
 },[max])
 
 
-
   const getFiltersResult=useCallback((title)=>{
-    console.log(title," im ")
+    //console.log(title," im ")
     if(title=="Contract" || title =="Permanent" || title=="Per Diem"){
       setSkill(title)
       //props.setSearchFilter({...props.searchFilter,GigType:title})
@@ -122,6 +112,12 @@ const budgetMaxHandler=useCallback((search)=>{
   },[skill,experience,budget,sortBy])
 
         const queryHandler =()=>{
+          let location;
+          if(props.locationPlaceHolder=="Search Location"){
+            location=null
+          }else{
+            location=props.locationPlaceHolder
+          }
           setModalVisible(!modalVisible)
           props.setSearchFilter({...props.searchFilter,
             GigType:skill,
@@ -129,13 +125,29 @@ const budgetMaxHandler=useCallback((search)=>{
             BudgetMax:max,
             BudgetType:budget,
             Experience:experience,
-            SortBy:sortBy
+            SortBy:sortBy,
+            Location:location
           })
          // props.getCardDetail()
          props.setShowHandler()
       }
       
-  
+
+      const locationHandler=async()=>{
+        console.log("im handler")
+        props.setShowLocationModal(prevState=>!prevState)
+       
+      }
+
+
+      const clearAllHandler=()=>{
+        console.log("im clear all handler")
+                setClearAll(true)
+                props.setLocationPlaceholderHandler("Search Location")
+      }
+   
+
+   //console.log(skill,max,min,budget,experience,"...")
   return (
       <>
    
@@ -149,27 +161,67 @@ const budgetMaxHandler=useCallback((search)=>{
              <Text style={{...styles.textStyle,fontWeight:"bold"}}>Sort Candidates by</Text>
              <EvilIcons name="close" size={totalSize(3.5)}  onPress={() => setModalVisible(!modalVisible)} />
            </View>: <View style={styles.headerView}>
-             <Text style={{...styles.textStyle,color:"#9e9e9e"}}>Clear All</Text>
+             <Text style={{...styles.textStyle,color:"#9e9e9e"}}
+             onPress={clearAllHandler}
+              >Clear All</Text>
              <Text style={{...styles.textStyle,fontWeight:"bold"}}>Filter</Text>
              <EvilIcons name="close" size={totalSize(3.5)}  onPress={() => setModalVisible(!modalVisible)} />
            </View> 
         }
-           {/* <View style={styles.headerView}>
-             <Text style={{...styles.textStyle,color:"#9e9e9e"}}>Clear All</Text>
-             <Text style={{...styles.textStyle,fontWeight:"bold"}}>Filter</Text>
-             <EvilIcons name="close" size={totalSize(3.5)}  onPress={() => setModalVisible(!modalVisible)} />
-           </View> */}
            <Line style={{
             height:1,
             backgroundColor:'#e4e4e4',
             alignSelf: 'stretch'}} /> 
             {btnType=="Filter"?
             <ScrollView>
-            <RadioBtn skillListing_props={skillListing_props} title="Skill Listing Type" getFiltersResult={getFiltersResult} />
-            <RadioBtn skillListing_props={experience_props} title="Experience Level" getFiltersResult={getFiltersResult} />
-            <RadioBtn skillListing_props={budget_props} title="Budget" getFiltersResult={getFiltersResult}/>
-             <BudgetInput budgetMinHandler={budgetMinHandler} budgetMaxHandler={budgetMaxHandler} min={min} max={max}  />
-             <RadioBtn skillListing_props={hide_props} title="Hide" getFiltersResult={getFiltersResult} />
+            <RadioBtn skillListing_props={skillListing_props} title="Skill Listing Type" getFiltersResult={getFiltersResult} 
+                 clearAll={clearAll}
+                 setClearAll={setClearAll}
+            />
+        
+                  {/*...................... Location start.................... */}
+            <Text style={styles.headingStyle}>Location</Text>
+            <Pressable onPress={locationHandler}>
+            <View style={styles.seacrhView}>
+            <Text  style={styles.input}>{props.locationPlaceHolder}</Text>
+            {/* <TextInput
+                style={styles.input}
+                //onChangeText={search => setSearch(search)}
+               // value={search}
+                placeholderTextColor="#7E7E7E"
+                placeholder="search location"
+            /> */}
+          
+        </View>
+
+      </Pressable>
+      
+          {/* .............................................Location end................................................... */}
+         
+            <RadioBtn skillListing_props={experience_props}
+             title="Experience Level" getFiltersResult={getFiltersResult}
+             clearAll={clearAll}
+             setClearAll={setClearAll}
+              />
+            <RadioBtn skillListing_props={budget_props} 
+            title="Budget" getFiltersResult={getFiltersResult}
+            clearAll={clearAll}
+            setClearAll={setClearAll}
+            />
+             <BudgetInput budgetMinHandler={budgetMinHandler}
+              budgetMaxHandler={budgetMaxHandler} 
+              min={min} 
+              max={max} 
+              setMin={setMin}
+              setMax={setMax}
+              clearAll={clearAll}
+              setClearAll={setClearAll}
+              />
+             <RadioBtn skillListing_props={hide_props}
+              title="Hide" getFiltersResult={getFiltersResult}
+              clearAll={clearAll}
+              setClearAll={setClearAll}
+               />
              <Line style={{
             height:2,
             backgroundColor:'#e4e4e4',
@@ -183,7 +235,11 @@ const budgetMaxHandler=useCallback((search)=>{
 
             </ScrollView>:
            <ScrollView>
-              <RadioBtn skillListing_props={sortCandidate_props} getFiltersResult={getFiltersResult} sortCandidate="sortCandidate" />
+              <RadioBtn skillListing_props={sortCandidate_props} getFiltersResult={getFiltersResult} 
+                sortCandidate="sortCandidate"
+              clearAll={clearAll}
+              setClearAll={setClearAll}
+               />
                       <Line style={{
                     height:2,
                     backgroundColor:'#e4e4e4',
@@ -239,10 +295,34 @@ const styles = StyleSheet.create({
   buttonClose: {
     backgroundColor: "pink",
   },
-  // modalText: {
-  //   marginBottom: 15,
-  //   textAlign: "center"
-  // },
+  seacrhView: {
+    borderWidth: 1,
+    borderRadius:8,
+    marginVertical: height(1.5),
+    height:height(9),
+    borderColor: '#ccc',
+    marginHorizontal:width(4),
+    //alignItems: 'center',
+    justifyContent:"center"
+},
+headingStyle:{
+  color:"#1e1e1e",
+  fontFamily: "SFProText",
+  marginTop:width(4),
+  marginHorizontal:width(3.5),
+  fontSize:totalSize(2.5),
+  fontWeight:"600",
+ 
+ },
+input: {
+    borderColor: "black",
+    height: height(6),
+    fontFamily: "SFProText",
+    paddingVertical: 0,
+    fontSize:totalSize(3.1),
+    width: width(80),
+    padding: width(3),
+},
 
 });
 
