@@ -5,6 +5,7 @@
  * @format
  * @flow strict-local
  */
+  
 
 import React, {useCallback, useState,useEffect} from 'react';
 import {
@@ -20,13 +21,12 @@ import Result from './Result';
 import ModalWindow from './Modal';
 import Header from './Header';
 import Toggle from './Toggle';
-import nurseImg from "./assets/nurse.jpg"
-import { height, width, totalSize } from 'react-native-dimension';
 import Pagination from './Pagination';
-import { useFilter } from './useFilter';
 import { useQuery,gql, useLazyQuery } from '@apollo/client';
 import SortLocation from './SortLocation';
+//import Geolocation from 'react-native-geolocation-service';
 
+import Geolocation from '@react-native-community/geolocation';
                                                                                 
 
 const App=()=>{
@@ -34,6 +34,7 @@ const App=()=>{
   const [page,setPage] = useState(1)
   const [userData,setUserData] = useState();
   const [show,setShow]=useState(false)
+  const[on,off] = useState(false)
   const [showLocationModal,setShowLocationModal]=useState(false)
   const [locationPlaceHolder,setLocationPlaceholder] = useState("Search Location")
   const [locationData,setLocationData] = useState({
@@ -46,11 +47,31 @@ const App=()=>{
     BudgetType:null,
     Experience:null,
     SortBy:null,
-    Location:null
+    Location:null,
+    Latitude : null,
+    Longitude : null,
   })
  
- 
-  const setCurrentPage=useCallback(
+  
+useEffect(()=>{
+ if(on){
+  Geolocation.getCurrentPosition(
+    (position) => {
+      setSearchFilter({...searchFilter,Latitude:position.coords.latitude,Longitude:position.coords.longitude})
+    },
+    (error) => {
+       console.log(error)
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+);
+  }
+  else{
+    setSearchFilter({...searchFilter,Latitude:null,Longitude:null})
+  }
+},[on])
+
+
+const setCurrentPage=useCallback(
     (pg) => {
       setPage(pg)
       getCardDetail()
@@ -68,7 +89,7 @@ const App=()=>{
             console.log(title," im placeholder")
   })
 
-console.log(searchFilter.Location, " searhc filter loavtios")
+  //console.log(searchFilter.Latitude, searchFilter.Longitude)
 
   const GET_CHARACTERS = gql`
   query{
@@ -83,6 +104,8 @@ console.log(searchFilter.Location, " searhc filter loavtios")
      BudgetMax : "${searchFilter.BudgetMax}",
      BudgetType : "${searchFilter.BudgetType}",
      Experience: "${searchFilter.Experience}",
+     Latitude : "${searchFilter.Latitude}",
+     Longitude : "${searchFilter.Longitude}",
     ){
       aggregate {
         count
@@ -115,6 +138,12 @@ console.log(searchFilter.Location, " searhc filter loavtios")
       //setSearchFilter({})
     };
   },[])
+
+  useEffect(()=>{
+    console.log("called..")
+      getCardDetail()
+  },[searchFilter.Latitude,searchFilter.Longitude])  
+  
 
 //  console.log(userData, " ....,.,.")
 //  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -155,7 +184,10 @@ console.log(searchFilter.Location, " searhc filter loavtios")
        setLocationData={setLocationData}
          setLocationPlaceholderHandler={setLocationPlaceholderHandler}
       /> }    
-           <Toggle text="Nearby Candidates" />
+           <Toggle text="Nearby Candidates"
+              on={on}
+              off={off}
+           />
            {loading && <Text>Loading...</Text>}
            {userData  &&  <View style={styles.internalView} >
              <View  style={styles.selectionView}

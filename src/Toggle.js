@@ -3,15 +3,14 @@ import { View, Switch, StyleSheet, Text } from "react-native";
 import { height, totalSize, width } from "react-native-dimension";
 import SwitchToggle from "react-native-switch-toggle";
 
-const Toggle = ({text}) => {
-   const [on,off] = useState(true)
+const Toggle = ({text,on,off}) => {
     return (
  <View style={styles.mainContainer}>
     <Text style={styles.textStyle}>{text}</Text>
    <SwitchToggle  
      switchOn={on}
      onPress={() => off(!on)}
-     duration = {50}
+     duration = {10}
    circleColorOn='#ffffff'
   backgroundColorOn='#118936'
   containerStyle={{
